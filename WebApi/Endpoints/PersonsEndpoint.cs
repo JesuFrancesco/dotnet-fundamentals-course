@@ -18,11 +18,32 @@ namespace WebApi.Endpoints
                     var p = await useCase.ExecuteAsync(id);
                     return Results.Ok(p);
                 }
-                catch (Exception ex)
+                catch (InvalidOperationException ex)
                 {
                     return Results.NotFound(new { error = ex.Message });
                 }
-            }).WithName("GetPersonById").WithDescription("Obtener persona por id");
+                catch (Exception ex)
+                {
+                    return Results.Problem(detail: ex.StackTrace);
+                }
+            }).WithName("GetPersonByIdEndpoint").WithDescription("Obtener persona por id").Produces(200).Produces(404);
+
+            personGroup.MapGet("/code/{code}", async (string code, GetPersonByCodeUseCase useCase) =>
+            {
+                try
+                {
+                    var p = await useCase.ExecuteAsync(code);
+                    return Results.Ok(p);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Results.NotFound(new { error = ex.Message });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(detail: ex.StackTrace);
+                }
+            }).WithName("GetPersonByCodeEndpoint").WithDescription("Obtener persona por su código").Produces(200).Produces(404);
 
             personGroup.MapGet("/", async (GetAllPersonsUseCase useCase) =>
             {
@@ -36,7 +57,7 @@ namespace WebApi.Endpoints
                 {
                     return Results.Problem(detail: ex.StackTrace);
                 }
-            });
+            }).WithName("GetAllPersonsEndpoint").WithDescription("Obtener todas las personas").Produces(200).Produces(500);
 
             personGroup.MapPost("/", async (CreatePersonDTO dto, CreatePersonUseCase useCase) =>
             {
@@ -58,14 +79,14 @@ namespace WebApi.Endpoints
                 catch (Exception)
                 {
                     return Results.StatusCode(500);
-                    //throw;
                 }
 
             })
             .WithName("CreatePersonEndpoint")
-            .WithDescription("yep")
-            .Produces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest);
+            .WithDescription("Crea una persona")
+            .Produces(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status500InternalServerError);
 
             personGroup.MapPut("/{id:guid}", async (Guid id, UpdatePersonDTO dto, UpdatePersonUseCase useCase) =>
             {
@@ -91,8 +112,28 @@ namespace WebApi.Endpoints
                 .Produces(200)
                 .Produces(400)
                 .Produces(500);
-        }
 
+            personGroup.MapDelete("/{id:guid}", async (Guid id, DeletePersonUseCase useCase) =>
+            {
+                try
+                {
+                    await useCase.ExecuteAsync(id);
+                    return Results.NoContent();
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.NotFound(new { error = ex.Message });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.StackTrace);
+                }
+            }).WithName("DeletePersonEndpoint")
+                .WithDescription("Delete a person")
+                .Produces(204)
+                .Produces(404)
+                .Produces(500);
+        }
     }
 
 }
