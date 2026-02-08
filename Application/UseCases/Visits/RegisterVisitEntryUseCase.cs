@@ -26,11 +26,7 @@ namespace Application.UseCases.Visits
             }
             else if (!string.IsNullOrWhiteSpace(dto.Code))
             {
-                var person = await _codeRepository.GetByCodeAsync(dto.Code);
-                if (person == null)
-                {
-                    throw new InvalidOperationException("");
-                }
+                var person = await _codeRepository.GetByCodeAsync(dto.Code) ?? throw new InvalidOperationException($"No se encontró persona con Code {dto.Code}");
                 personId = person.Id;
             }
             else

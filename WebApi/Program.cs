@@ -1,8 +1,6 @@
 using Application.UseCases.Persons;
+using Application.UseCases.Visits;
 using Data;
-using Data.Repositories;
-using Domain;
-using Domain.Abstractions;
 using WebApi.Endpoints;
 
 namespace WebApi
@@ -16,7 +14,9 @@ namespace WebApi
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Falta la conexión a la db");
             Console.WriteLine(connectionString);
 
+            // evil method extension for IServiceCollection class 
             builder.Services.AddInfrastructure(connectionString);
+
             //builder.Services.AddScoped<IRepository<PersonEntity, Guid>, PersonRepository>();
             //builder.Services.AddScoped<ICodeRepository<PersonEntity>, PersonRepository>();
 
@@ -26,6 +26,12 @@ namespace WebApi
             builder.Services.AddScoped<GetPersonByCodeUseCase>();
             builder.Services.AddScoped<GetPersonByIdUseCase>();
             builder.Services.AddScoped<UpdatePersonUseCase>();
+
+            builder.Services.AddScoped<GetActiveVisitsUseCase>();
+            builder.Services.AddScoped<GetAllVisitsUseCase>();
+            builder.Services.AddScoped<GetVisitsByPersonUseCase>();
+            builder.Services.AddScoped<RegisterVisitEntryUseCase>();
+            builder.Services.AddScoped<RegisterVisitExitUseCase>();
 
             // Add services to the container.
             builder.Services.AddAuthorization();
@@ -45,7 +51,9 @@ namespace WebApi
 
             app.UseHttpsRedirection();
 
-            app.MapEndpoints();
+            var apiV1 = app.MapGroup("/api/v1");
+            apiV1.MapPersonsEndpoints();
+            apiV1.MapVisitsEndpoints();
 
             app.Run();
         }

@@ -5,6 +5,6 @@
         Task<bool> HasActiveVisitAsync(Guid personId);
         Task<IEnumerable<TEntity>> GetActiveVisitsAsync();
         Task<IEnumerable<TEntity>> GetVisitsByPersonIdAsync(Guid personId);
-        Task<TEntity> GetActiveVisitByPersonCodeAsync(string personCode);
+        Task<TEntity?> GetActiveVisitByPersonCodeAsync(string personCode);
     }
 }

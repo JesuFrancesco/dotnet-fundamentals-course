@@ -5,13 +5,11 @@ namespace WebApi.Endpoints
 {
     public static class PersonsEndpoint
     {
-        public static void MapEndpoints(this IEndpointRouteBuilder builder)
+        public static void MapPersonsEndpoints(this IEndpointRouteBuilder builder)
         {
-            var api = builder.MapGroup("/api/v1");
+            var group = builder.MapGroup("/persons").WithTags("Persons");
 
-            var personGroup = api.MapGroup("/persons").WithTags("Persons");
-
-            personGroup.MapGet("/{id:guid}", async (Guid id, GetPersonByIdUseCase useCase) =>
+            group.MapGet("/{id:guid}", async (Guid id, GetPersonByIdUseCase useCase) =>
             {
                 try
                 {
@@ -28,7 +26,7 @@ namespace WebApi.Endpoints
                 }
             }).WithName("GetPersonByIdEndpoint").WithDescription("Obtener persona por id").Produces(200).Produces(404);
 
-            personGroup.MapGet("/code/{code}", async (string code, GetPersonByCodeUseCase useCase) =>
+            group.MapGet("/code/{code}", async (string code, GetPersonByCodeUseCase useCase) =>
             {
                 try
                 {
@@ -45,7 +43,7 @@ namespace WebApi.Endpoints
                 }
             }).WithName("GetPersonByCodeEndpoint").WithDescription("Obtener persona por su código").Produces(200).Produces(404);
 
-            personGroup.MapGet("/", async (GetAllPersonsUseCase useCase) =>
+            group.MapGet("/", async (GetAllPersonsUseCase useCase) =>
             {
                 try
                 {
@@ -59,7 +57,7 @@ namespace WebApi.Endpoints
                 }
             }).WithName("GetAllPersonsEndpoint").WithDescription("Obtener todas las personas").Produces(200).Produces(500);
 
-            personGroup.MapPost("/", async (CreatePersonDTO dto, CreatePersonUseCase useCase) =>
+            group.MapPost("/", async (CreatePersonDTO dto, CreatePersonUseCase useCase) =>
             {
                 try
                 {
@@ -88,7 +86,7 @@ namespace WebApi.Endpoints
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status500InternalServerError);
 
-            personGroup.MapPut("/{id:guid}", async (Guid id, UpdatePersonDTO dto, UpdatePersonUseCase useCase) =>
+            group.MapPut("/{id:guid}", async (Guid id, UpdatePersonDTO dto, UpdatePersonUseCase useCase) =>
             {
                 try
                 {
@@ -113,7 +111,7 @@ namespace WebApi.Endpoints
                 .Produces(400)
                 .Produces(500);
 
-            personGroup.MapDelete("/{id:guid}", async (Guid id, DeletePersonUseCase useCase) =>
+            group.MapDelete("/{id:guid}", async (Guid id, DeletePersonUseCase useCase) =>
             {
                 try
                 {

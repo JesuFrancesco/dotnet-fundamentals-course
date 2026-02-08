@@ -11,6 +11,7 @@
         public bool IsActive => ExitTime == null;
         public TimeSpan? Duration => ExitTime.HasValue ? ExitTime.Value - EntryTime : null;
 
+
         public VisitEntity(Guid personId, DateTime? entryTime = null)
         {
             if (personId == Guid.Empty)
@@ -22,6 +23,11 @@
             EntryTime = entryTime ?? DateTime.UtcNow;
         }
 
+        // evil ef constructor
+        private VisitEntity()
+        {
+        }
+
         public void RegisterExit(DateTime? exitTime = null)
         {
             if (ExitTime.HasValue) { throw new InvalidOperationException("La visita ya tiene salida registrada"); }
@@ -31,6 +37,8 @@
             {
                 throw new ArgumentException("La hora de slaida debe ser posterior a la hora de entrada", nameof(exit));
             }
+
+            ExitTime = exit;
         }
     }
 }
